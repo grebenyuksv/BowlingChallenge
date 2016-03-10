@@ -1,53 +1,71 @@
-var Bowling = Bowling || {};
-Bowling.Score = (function () {
+var Scoring = (function () {
 
-    var Score = function (previousScore) {
+    //  result is:
+    //  - a number
+    //  - a function(firstNextRollResult, secondNextRollResult, ...) which returns number based on the following roll results
 
-        var frameDone = false, pointsScored = 0, nextRollsCallback, nextRollImplementation;
-
-        var modifiers = {
-            finishFrame: function () {
-                frameDone = true;
-            },
-            addPoints: function (points) {
-                pointsScored = points;
-            },
-            waitForNextRolls: function (callback) {
-                nextRollsCallback = callback;
-            },
-            continueWith: function (rollImplementation) {
-                nextRollImplementation = rollImplementation;
-            }
+    var FrameResult = function (result) {
+        var public_result = typeof(result) == "number" ?
+        {
+            points: result
+        } : {
+            isWaitingForNextRolls: true
         };
 
-        var Roll = function (score, modifiers, rollImplementation) {
-            this.knockDown = function (pinsDown) {
-                //  score.notifyKnockedDown(pinsDown);
-                //  rollImplementation(modifiers, pinsDown);
-                return score;
+        result = closurify(result);
+
+        return {
+            getPublic: function () {
+                return public_result;
+            },
+            update: function (nextRollResult) {
+                return new FrameResult(result(nextRollResult));
             }
+        }
+    };
+
+    var Scoring = function (frameResults, currentRollImpl) {
+
+        var Roll = function (rollImplementation) {
+
+            var frameResult, nextRollImpl;
+
+            var rollBehaviour = {
+                finishFrame: function (result) {
+                    frameResult = result;
+                },
+                continueWith: function (rollImpl) {
+                    nextRollImpl = rollImpl;
+                }
+            };
+
+            this.knockDown = function (pinsCount) {
+                rollImplementation(publicResults, rollBehaviour, pinsCount);
+                var updatedFrameResults = frameResults.map(function (result) {
+                    return result.update(pinsCount);
+                });
+                if (frameResult) {
+                    updatedFrameResults.push(new FrameResult(frameResult));
+                }
+                return new Scoring(updatedFrameResults, nextRollImpl);
+            };
         };
+
+        var currentRoll = currentRollImpl ? new Roll(currentRollImpl) : null;
 
         this.getRoll = function () {
-            return new Roll(new Score(this), modifiers, nextRollImplementation);
+            return currentRoll;
         };
 
-        this.getPoints = function () {
-            return pointsScored + (previousScore ? previousScore.getPoints() : 0);
-        };
-
-        this.getCompletedFramesCount = function () {
-            return (frameDone ? 1 : 0) + (previousScore ? previousScore.getCompletedFramesCount() : 0);
-        };
-
-        this.hasWaitingFrames = function () {
-            return !frameDone || (previousScore && previousScore.hasWaitingFrames());
+        var publicResults = frameResults.map(function (frameResult) {
+            return frameResult.getPublic();
+        });
+        this.getFrameResults = function () {
+            return publicResults;
         };
     };
 
-    return {
-        create: function () {
-            return new Score(null);
-        }
+    return function (firstRollImpl) {
+        return new Scoring([], firstRollImpl);
     };
 })();

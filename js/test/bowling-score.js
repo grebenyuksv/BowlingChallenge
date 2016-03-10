@@ -1,0 +1,33 @@
+var scoring = new Scoring(Bowling.Rolls.FirstRollOfGame);
+console.log(JSON.stringify(scoring.getFrameResults()));
+console.log(JSON.stringify(scoring.getRoll()));
+console.log(JSON.stringify(scoring.getRoll().knockDown(5).getFrameResults()));
+console.log(JSON.stringify(scoring.getRoll().knockDown(10).getRoll().knockDown(2).getRoll().knockDown(3).getFrameResults()));
+console.log(JSON.stringify(scoring.
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getFrameResults()));
+console.log(JSON.stringify(scoring.
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll().knockDown(10).
+    getRoll()));
