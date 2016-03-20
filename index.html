@@ -3,12 +3,95 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Bowling Challenge</title>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
     <script src="js/closurify.js" type="text/javascript"></script>
-    <script src="js/bowling-score.js" type="text/javascript"></script>
-    <script src="js/bowling-rules.js" type="text/javascript"></script>
-    <script src="js/bowling-rolls.js" type="text/javascript"></script>
-    <script src="js/test/bowling-score.js" type="text/javascript"></script>
+    <script src="js/events.js" type="text/javascript"></script>
+    <script src="js/scoring.js" type="text/javascript"></script>
+    <script src="js/rules.js" type="text/javascript"></script>
+    <script src="js/rolls.js" type="text/javascript"></script>
+    <script src="js/update-checker.js" type="text/javascript"></script>
+    <script src="js/undo.js" type="text/javascript"></script>
+    <script src="js/ui.js" type="text/javascript"></script>
+    <script src="js/view.js" type="text/javascript"></script>
+    <script src="js/controller-ui.js" type="text/javascript"></script>
+    <script src="js/controller.js" type="text/javascript"></script>
+    <script src="js/onload.js" type="text/javascript"></script>
+    <!--<script src="js/test/events.js" type="text/javascript"></script>-->
+    <!--<script src="js/test/scoring.js" type="text/javascript"></script>-->
+    <!--<script src="js/test/update-checker.js" type="text/javascript"></script>-->
+    <!--<script src="js/test/ui.js" type="text/javascript"></script>-->
+    <!--<script src="js/test/undo.js" type="text/javascript"></script>-->
 </head>
 <body>
+<div id="bowling-score" class="bowling-score">
+    <div class="frame">
+        <!--<div class="heading">1</div>-->
+        <div class="roll-result">-</div>
+        <div class="roll-result"></div>
+        <div class="frame-result">-</div>
+    </div>
+    <div class="frame">
+        <div class="roll-result"></div>
+        <div class="roll-result"></div>
+        <div class="frame-result"></div>
+    </div>
+    <div class="frame">
+        <div class="roll-result"></div>
+        <div class="roll-result"></div>
+        <div class="frame-result"></div>
+    </div>
+    <div class="frame">
+        <div class="roll-result"></div>
+        <div class="roll-result"></div>
+        <div class="frame-result"></div>
+    </div>
+    <div class="frame">
+        <div class="roll-result"></div>
+        <div class="roll-result"></div>
+        <div class="frame-result"></div>
+    </div>
+    <div class="frame">
+        <div class="roll-result"></div>
+        <div class="roll-result"></div>
+        <div class="frame-result"></div>
+    </div>
+    <div class="frame">
+        <div class="roll-result"></div>
+        <div class="roll-result"></div>
+        <div class="frame-result"></div>
+    </div>
+    <div class="frame">
+        <div class="roll-result"></div>
+        <div class="roll-result"></div>
+        <div class="frame-result"></div>
+    </div>
+    <div class="frame">
+        <div class="roll-result"></div>
+        <div class="roll-result"></div>
+        <div class="frame-result"></div>
+    </div>
+    <div class="last-frame">
+        <div class="roll-result"></div>
+        <div class="roll-result extra-roll-result"></div>
+        <div class="roll-result extra-roll-result"></div>
+        <div class="frame-result"></div>
+    </div>
+    <div class="total">-</div>
+</div>
+<div class="controller-buttons">
+    <button class="roll-button" data-id="0">0</button>
+    <button class="roll-button" data-id="1">1</button>
+    <button class="roll-button" data-id="2">2</button>
+    <button class="roll-button" data-id="3">3</button>
+    <button class="roll-button" data-id="4">4</button>
+    <button class="roll-button" data-id="5">5</button>
+    <button class="roll-button" data-id="6">6</button>
+    <button class="roll-button" data-id="7">7</button>
+    <button class="roll-button" data-id="8">8</button>
+    <button class="roll-button" data-id="9">9</button>
+    <button class="roll-button" data-id="10">10</button>
+    <button class="roll-random-button">Random</button>
+    <button class="fill-random-button">Fill Random</button>
+</div>
 </body>
 </html>

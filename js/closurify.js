@@ -10,7 +10,7 @@ var closurify = (function () {
 
     var closurify_private = function (f, length) {
         length = length || f.length;    //  support list : https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Function/length
-        if (typeof(f) != "function") {
+        if (typeof(f) !== "function") {
             return function () {
                 return f;
             };
