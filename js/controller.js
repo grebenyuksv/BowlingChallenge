@@ -20,7 +20,7 @@ function Controller(model, ui) {
     };
 
     var rollRandom = function (scoring) {
-        return roll(scoring, Math.floor(Math.random() * scoring.getRoll().getInfo().pinsAtStart + 1));
+        return roll(scoring, Math.floor(Math.random() * scoring.getRoll().getPinsBeforeRoll() + 1));
     };
 
     ui.subscribe(ui.Events.ROLL_RANDOM, function () {

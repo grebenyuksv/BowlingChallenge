@@ -1,5 +1,5 @@
 window.addEventListener('load', function () {
-    var scoring = new Scoring(Bowling.Rolls.FirstRollOfGame);
+    var scoring = Bowling.Rolls.createGame();
     var model = new Undo(scoring);
     var ui = new UI();
     new View(model, ui);
