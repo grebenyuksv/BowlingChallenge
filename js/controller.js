@@ -1,35 +1,37 @@
-function Controller(undo /* model */, ui) {
+function Controller(model, ui) {
 
-    ui.subscribe(ui.Events.UNDO, undo.undo.bind(undo));
+    ui.subscribe(ui.Events.UNDO, model.undo.bind(model));
 
-    ui.subscribe(ui.Events.REDO, undo.redo.bind(undo));
+    ui.subscribe(ui.Events.REDO, model.redo.bind(model));
 
     ui.subscribe(ui.Events.ROLL, function (result) {
-        roll(result);
+        model.save(roll(model.current(), result));
     });
 
     var canRoll = function () {
-        return !!undo.current().getRoll();
+        return !!model.current().getRoll();
     };
 
-    var roll = function (result) {
+    var roll = function (scoring, result) {
         if (!canRoll()) {
             throw "Game over, cannot roll";
         }
-        console.log("roll", JSON.stringify(undo.current().getRoll().getInfo()), result);
-        undo.save(undo.current().getRoll().knockDown(result));
+        return scoring.getRoll().knockDown(result);
     };
 
-    var rollRandom = function () {
-        console.log('roll random');
-        roll(Math.floor(Math.random() * (Bowling.Constants.pins + 1)));
+    var rollRandom = function (scoring) {
+        return roll(scoring, Math.floor(Math.random() * scoring.getRoll().getInfo().pinsAtStart + 1));
     };
 
-    ui.subscribe(ui.Events.ROLL_RANDOM, rollRandom);
+    ui.subscribe(ui.Events.ROLL_RANDOM, function () {
+        model.save(rollRandom(model.current()));
+    });
 
     ui.subscribe(ui.Events.FILL_RANDOM, function () {
-        while (undo.current().getRoll()) {
-            rollRandom();
+        var scoring = model.current();
+        while (scoring.getRoll()) {
+            scoring = rollRandom(scoring);
         }
+        model.save(scoring);
     });
 }

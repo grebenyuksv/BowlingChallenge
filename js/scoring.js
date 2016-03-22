@@ -1,64 +1,52 @@
 var Scoring = (function () {
 
-    var FrameResults = function () {
+    var FrameResults = (function () {
 
-        //  result may be:
-        //  - a number
-        //  - a function(firstNextRollResult, secondNextRollResult, ...) which returns number based on the following roll results
-
-        var FrameResult = function (result) {
-            var isWaitingForNextRolls = typeof(result) !== "number";
-
-            return {
-                getValue: function () {
-                    return isWaitingForNextRolls ? { isWaitingForNextRolls: true} : {points: result};
-                },
-                getUpdated: function (nextRollResult) {
-                    return isWaitingForNextRolls ? new FrameResult(closurify(result)(nextRollResult)) : this;
-                }
-            }
+        var getPublicResult = function (result) {
+            return typeof(result) === "number" && result;
         };
 
-        var private_constructor = function (frameResults) {
+        var FrameResults = function (frameResults) {
+
             return {
                 getLength: function () {
                     return frameResults.length;
                 },
                 getResultAt: function (frameIndex) {
-                    return frameResults[frameIndex] && frameResults[frameIndex].getValue() || null;
+                    return getPublicResult(frameResults[frameIndex]);
                 },
                 getUpdated: function (nextRollResult, nextFrameResult) {
-                    var updatedResults = frameResults.map(function (res) {
-                        return res.getUpdated(nextRollResult);
+                    var updatedResults = frameResults.map(function (result) {
+                        return closurify(result)(nextRollResult);
                     });
                     if (nextFrameResult) {
-                        updatedResults.push(new FrameResult(nextFrameResult));
+                        updatedResults.push(nextFrameResult);
                     }
-                    return new private_constructor(updatedResults);
+                    return new FrameResults(updatedResults);
                 },
                 getTotal: function () {
                     return frameResults.reduce(function (sum, frameResult) {
-                        if (!frameResult.isWaitingForNextRolls) {
-                            sum += frameResult.points;
-                        }
-                        return sum;
+                        return sum + (getPublicResult(frameResult) || 0);
                     }, 0);
                 }
             }
         };
 
-        return new private_constructor([]);
-    };
+        return {
+            create: function () {
+                return new FrameResults([]);
+            }
+        }
+    })();
 
     var RollResults = function () {
-        var private_constructor = function (rollResults, extraRollResults) {
+        var RollResults = function (rollResults, extraRollResults) {
             return {
                 getMandatoryRollResultAt: function (frameIndex, rollIndex) {
-                    var res = rollResults[frameIndex] && rollResults[frameIndex][rollIndex];
-                    return typeof(res) === "number" ? res : null;
+                    return rollResults[frameIndex] && rollResults[frameIndex][rollIndex];
                 },
                 getExtraRollResultAt: function (rollIndex) {
-                    return rollResults[rollIndex];
+                    return extraRollResults[rollIndex];
                 },
                 getUpdated: function (nextRollResult, ifFinishedFrame, ifExtraRoll) {
                     var updatedResults = rollResults.map(function (res) {
@@ -68,12 +56,12 @@ var Scoring = (function () {
                     if (ifFinishedFrame) {
                         updatedResults.push([]);
                     }
-                    return new private_constructor(updatedResults, updatedExtraResults);
+                    return new RollResults(updatedResults, updatedExtraResults);
                 }
             }
         };
 
-        return new private_constructor([
+        return new RollResults([
             []
         ], []);
     };
@@ -126,7 +114,7 @@ var Scoring = (function () {
 //                }
                 return new Scoring(
                     frameResults.getUpdated(pinsCount, frameResult),
-                    rollResults.getUpdated(pinsCount, !!frameResult, currentRollImpl.getInfo().type === Bowling.Rolls.Types.Extra),
+                    rollResults.getUpdated(pinsCount, !!frameResult, currentRollImpl.getInfo().isExtra),
                     nextRollImpl);
             }
         };
@@ -138,15 +126,15 @@ var Scoring = (function () {
             return currentRoll;
         };
 
-        this.getFrameResult = function (frameIndex) {
+        this.getFrameResultAt = function (frameIndex) {
             return frameResults.getResultAt(frameIndex);
         };
 
-        this.getRollResult = function (frameIndex, rollIndex) {
+        this.getRollResultAt = function (frameIndex, rollIndex) {
             return rollResults.getMandatoryRollResultAt(frameIndex, rollIndex);
         };
 
-        this.getExtraRollResult = function (rollIndex) {
+        this.getExtraRollResultAt = function (rollIndex) {
             return rollResults.getExtraRollResultAt(rollIndex);
         };
 
@@ -156,6 +144,6 @@ var Scoring = (function () {
     };
 
     return function (firstRollImpl) {
-        return new Scoring(new FrameResults(), new RollResults(), firstRollImpl);
+        return new Scoring(FrameResults.create(), new RollResults(), firstRollImpl);
     };
 })();

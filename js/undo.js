@@ -1,10 +1,10 @@
 function Undo(initialMemento) {
 
-    var mementos = [initialMemento], currentIndex = 0, MAX_SIZE = 20;
+    var mementos = [initialMemento], currentIndex = 0/*, MAX_SIZE = 20*/;
 
     this.save = function (memento) {
         mementos.splice(++currentIndex, mementos.length /* delete all */, memento);
-        currentIndex -= mementos.splice(1, mementos.length - MAX_SIZE).length;
+//        currentIndex -= mementos.splice(1, mementos.length - MAX_SIZE).length;
         onUpdated();
     };
 
@@ -17,7 +17,7 @@ function Undo(initialMemento) {
 
     this.redo = function () {
         if (this.canRedo()) {
-            --currentIndex;
+            ++currentIndex;
             onUpdated();
         }
     };
@@ -38,10 +38,10 @@ function Undo(initialMemento) {
         return mementos.size - 1;   //  -initial
     };
 
-    var events = new Events(), event = "getUpdated";
+    var events = new PubSub(), event = "getUpdated";
 
     var onUpdated = function () {
-        events.trigger(event, this.current(), this);
+        events.publish(event, this.current(), this);
     }.bind(this);
 
     this.onUpdate = function (callback /* function(memento, history) */) {

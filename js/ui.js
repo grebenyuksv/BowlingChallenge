@@ -9,12 +9,20 @@ var UI = (function () {
             var keyCode = event.charCode || event.keyCode;
             if (event.ctrlKey && keyCode == 90 /*z*/) {
                 if (event.shiftKey) {
-                    undoEnabled && trigger(publicEvents.REDO);
+                    redoEnabled && trigger(publicEvents.REDO);
                 } else {
-                    redoEnabled && trigger(publicEvents.UNDO);
+                    undoEnabled && trigger(publicEvents.UNDO);
                 }
             }
         });
+
+        var rollButtons = document.querySelectorAll(".roll-button");
+        for (var i = 0; i < rollButtons.length; ++i) {
+            var btn = rollButtons[i];
+            btn.addEventListener('click', function () {
+                trigger(publicEvents.ROLL, parseInt(this.dataset.id));
+            }.bind(btn));
+        }
 
         document.querySelector(".roll-random-button").addEventListener('click', function () {
             trigger(publicEvents.ROLL_RANDOM);
@@ -34,24 +42,24 @@ var UI = (function () {
         Object.freeze(publicEvents);
 
         var dataBinding = new UpdateChecker();
-        var events = new Events();
+        var events = new PubSub();
         var trigger = function () {
-            events.trigger.apply(this, arguments);
+            events.publish.apply(this, arguments);
             dataBinding.update();
         };
 
         var bindFieldToData = function (field, dataSetter, dataProvider) {
             dataBinding.watch(function (data) {
-                (data != null) && dataSetter(field, data);
+                dataSetter(field, data);
             }, dataProvider);
         };
 
         var resultSetter = function (node, value) {
-            node.innerHTML = value;
+            node.innerHTML = (typeof(value) === "number") ? value : "";
         };
 
         var enabledSetter = function (node, isEnabled) {
-            node.disabled = !isEnabled;
+            node.style.visibility = isEnabled ? "visible" : "hidden";
         };
 
         var rollEnabledDataSetter = function (node, availableRolls) {
@@ -74,8 +82,7 @@ var UI = (function () {
                 for (var i = 0; i < frameNodes.length; ++i) {
                     var nodes = frameNodes[i].parentNode.querySelectorAll(".roll-result");
                     for (var j = 0; j < nodes.length; ++j) {
-                        bindFieldToData(nodes[j], resultSetter, resultProvider.bind(this, i, j))
-                        nodes[j].innerHTML = resultProvider(i, j);
+                        bindFieldToData(nodes[j], resultSetter, resultProvider.bind(this, i, j));
                     }
                 }
             },

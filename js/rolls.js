@@ -3,7 +3,8 @@ Bowling.Rolls = (function () {
     var FirstRollOfFrame = {
         getInfo: function (framesDone) {
             return {
-                type: TYPE_MANDATORY,
+                pinsAtStart: Bowling.Constants.pins,
+                isExtra: false,
                 frameIndex: framesDone,
                 rollIndex: 0
             }
@@ -14,7 +15,7 @@ Bowling.Rolls = (function () {
                 score.finishFrame(function (firstNextPinsDown, secondNextPinsDown) {
                     return pinsDown + firstNextPinsDown + secondNextPinsDown;
                 });
-                score.continueWith(framesDone < Bowling.Constants.frames ? FirstRollOfFrame : ExtraRolls(2));
+                score.continueWith(framesDone + 1 < Bowling.Constants.frames ? FirstRollOfFrame : ExtraRolls(2));
             } else {
                 score.continueWith(SecondRollOfFrame(pinsDown));
             }
@@ -25,10 +26,11 @@ Bowling.Rolls = (function () {
         return {
             getInfo: function (framesDone) {
                 return {
-                    type: TYPE_MANDATORY,
-                    frameIndex: framesDone + 1,
+                    pinsAtStart: Bowling.Constants.pins - pinsDownInFirstRoll,
+                    isExtra: false,
+                    frameIndex: framesDone,
                     rollIndex: 1
-                }
+                };
             },
             knockDown: function (framesDone, score, pinsDown) {
                 if (pinsDownInFirstRoll + pinsDown == Bowling.Constants.pins) {
@@ -36,11 +38,11 @@ Bowling.Rolls = (function () {
                     score.finishFrame(function (nextPinsDown) {
                         return pinsDownInFirstRoll + pinsDown + nextPinsDown;
                     });
-                    score.continueWith(framesDone < Bowling.Constants.frames ? FirstRollOfFrame : ExtraRolls(1));
+                    score.continueWith(framesDone + 1 < Bowling.Constants.frames ? FirstRollOfFrame : ExtraRolls(1));
                 } else {
                     //  open frame
                     score.finishFrame(pinsDownInFirstRoll + pinsDown);
-                    if (framesDone < Bowling.Constants.frames) {
+                    if (framesDone + 1 < Bowling.Constants.frames) {
                         score.continueWith(FirstRollOfFrame);
                     }
                 }
@@ -49,31 +51,26 @@ Bowling.Rolls = (function () {
     };
 
     var ExtraRolls = function (totalExtraRolls) {
-        var ExtraRoll = function (rollIndex) {
+        var ExtraRoll = function (rollIndex, pinsAtStart) {
             return {
                 getInfo: function (framesDone) {
                     return {
-                        type: TYPE_EXTRA,
+                        pinsAtStart: pinsAtStart,
+                        isExtra: true,
                         rollIndex: rollIndex
-                    }
+                    };
                 },
                 knockDown: function (frameResults, score, pinsDown) {
-                    if (totalExtraRolls - rollIndex > 0) {
-                        score.continueWith(ExtraRoll(rollIndex + 1));
+                    if (totalExtraRolls - rollIndex > 1) {
+                        score.continueWith(ExtraRoll(rollIndex + 1, (pinsAtStart - pinsDown) || Bowling.Constants.pins));
                     }
                 }
             }
         };
-        return ExtraRoll(1);
+        return ExtraRoll(0, Bowling.Constants.pins);
     };
 
-    var TYPE_EXTRA = "extra", TYPE_MANDATORY = "mandatory";
-
     return {
-        Types: {
-            Extra: TYPE_EXTRA,
-            Mandatory: TYPE_MANDATORY
-        },
         FirstRollOfGame: FirstRollOfFrame
     };
 })();
