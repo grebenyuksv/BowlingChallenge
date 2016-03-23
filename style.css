@@ -1,0 +1,65 @@
+.bowling-score {
+    margin-left: 20px;
+    margin-right: 20px;
+    border: 3px solid red;
+    font-size: 0;
+}
+
+.frame, .last-frame, .total {
+    position: relative;
+    box-sizing: border-box;
+    border: black 2px solid;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.frame {
+    width: 8.7%;
+}
+
+.last-frame {
+    width: 11.6%;
+}
+
+.total {
+    width: 10.1%;
+}
+
+.frame, .last-frame {
+    text-align: right;
+}
+
+.frame-result, .roll-result, .total {
+    font-size: 20px;
+    text-align: center;
+}
+
+.frame-result, .roll-result {
+    line-height: 50px;
+    height: 50px;
+}
+
+.total {
+    line-height: 104px;
+    height: 104px;
+}
+
+.roll-result {
+    display: inline-block;
+    vertical-align: top;
+    box-sizing: border-box;
+    border-left: black 1px solid;
+    border-bottom: black 1px solid;
+}
+
+.frame .roll-result {
+    width: 33%;
+}
+
+.last-frame .roll-result {
+    width: 25%;
+}
+
+.controller-buttons {
+    margin-left: 20px;
+}
