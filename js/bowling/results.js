@@ -69,8 +69,8 @@ Bowling.Results = (function (Constants) {
                 }
                 return getPublicFrameResultWithRolls(frameResults[frameIndex]);
             },
-            getExtraRollResultAt: function (rollIndex) {
-                return extraRollResults[rollIndex];
+            getExtraRollResults: function () {
+                return extraRollResults.slice();
             },
             getTotal: function () {
                 return frameResults.reduce(function (sum, frameResult) {
